@@ -1,7 +1,9 @@
 ### windeployIC  ###
 
 ;Opciones Diskpart
+;array de discos
 Global $arDisks
+; array de particiones en el disco actual
 Global $arParticiones
 Global $Diskpart_pid = 0
 Global $DiscoActual = "N"

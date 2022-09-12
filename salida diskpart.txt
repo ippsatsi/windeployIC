@@ -1,0 +1,52 @@
+C:\>diskpart
+
+Microsoft DiskPart versión 10.0.19041.1
+
+Copyright (C) Microsoft Corporation.
+En el equipo: MININT-H2B6P1N
+
+DISKPART> list disk
+
+  Núm Disco  Estado      Tamaño   Disp     Din  Gpt
+  ---------- ----------  -------  -------  ---  ---
+  Disco 0    En línea        238 GB  1024 KB        *
+  Disco 1    En línea         57 GB      0 B
+
+DISKPART> sel disk 0
+
+El disco 0 es ahora el disco seleccionado.
+
+DISKPART> detail disk
+
+Lexar SSD
+Id. de disco: {98ED04B2-4FF2-4300-A41C-A44B4B666FFC}
+Tipo        : SATA
+Estado : En línea
+Ruta        : 3
+Destino     : 0
+Id. de LUN  : 0
+Ruta de la ubicación: PCIROOT(0)#PCI(1700)#ATA(C03T00L00)
+Estado de solo lectura actual: No
+Solo lectura       : No
+Disco de arranque  : No
+Disco de archivo de paginación  : No
+Disco de archivo de hibernación  : No
+Disco de volcado  : No
+Disco en clúster: No
+
+  Núm Volumen Ltr  Etiqueta     Fs     Tipo        Tamaño   Estado     Info
+  ----------- ---  -----------  -----  ----------  -------  ---------  --------
+  Volumen 0     C               NTFS   Partición    237 GB  Correcto
+  Volumen 1                     NTFS   Partición    522 MB  Correcto
+  Volumen 2                     FAT32  Partición    100 MB  Correcto   Oculto
+
+DISKPART> list part
+
+  Núm Partición  Tipo              Tamaño   Desplazamiento
+  -------------  ----------------  -------  ---------------
+  Partición 1    Sistema            100 MB  1024 KB
+  Partición 2    Reservado           16 MB   101 MB
+  Partición 3    Principal          237 GB   117 MB
+  Partición 4    Recuperación       522 MB   237 GB
+
+DISKPART>

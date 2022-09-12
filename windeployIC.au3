@@ -47,6 +47,15 @@ While 1
 				GUICtrlRead($inNombreImagen) <> "" And _
 				GUICtrlRead($inDescripImagen) <> "" Then
 				MsgBox(0, "prueba boton", "Crear imagen" )
+				;obtener num de disco seleccionado
+				;encontrar particion principal
+				;	seleccionar disco
+				;	obtener particiones
+				;encontrar particion recovery
+				;sino encontramos algunas de las 2 particiones lanzar error y cancelar proceso
+				; asignar letras a las 2 particiones
+				; crear imagen de principal
+				; si no hay imagen de recovery, crear imagen de recovery
 ;~ 				DismCapture(GUICtrlRead($inCapUnidadSrc), _
 ;~ 					GUICtrlRead($inFileDestino), _
 ;~ 					GUICtrlRead($inNombreImagen), _
