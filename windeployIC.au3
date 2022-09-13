@@ -46,8 +46,9 @@ While 1
 			If 	GUICtrlRead($inFileDestino) <> "" And _
 				GUICtrlRead($inNombreImagen) <> "" And _
 				GUICtrlRead($inDescripImagen) <> "" Then
-				MsgBox(0, "prueba boton", "Crear imagen" )
+				MsgBox(0, "prueba boton", "Crear imagen Disco Actual:" & $DiscoActual  )
 				;obtener num de disco seleccionado
+				;$ItemSelected = ControlListView($CrearImagen, "", $lwListDisc,"GetSelected")
 				;encontrar particion principal
 				;	seleccionar disco
 				;	obtener particiones
