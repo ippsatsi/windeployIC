@@ -135,7 +135,7 @@ Func dpf_ExtraerListaParticiones($sSalida)
 		$arParticiones[$i][4] = _ConvertirGBbinToGBdecimal($arSize[0], $arSize[1])
 		$arParticiones[$i][5] = $arSize[1] ;Unidad
 	 Next
-	 _ArrayDisplay($arParticiones, "Lista Filas")
+	 ;_ArrayDisplay($arParticiones, "Lista Filas")
 	Return True
 
 EndFunc
@@ -197,7 +197,7 @@ Func SeleccionarDisco($Diskpart_pid, $intNumDisco)
 
 	$sSalida = EjecutarComandoDiskpart($Diskpart_pid, "sel disk " & $intNumDisco)
 	If StringInStr($sSalida, "El disco " & $intNumDisco & " es ahora el disco seleccionado") > 0 Then
-;~ 		ConsoleWrite($sSalida & "??????")
+ 		;ConsoleWrite($sSalida & "??????")
 		Return True
 	Else
 		Return False

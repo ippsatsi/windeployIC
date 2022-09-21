@@ -50,6 +50,21 @@ While 1
 				;obtener num de disco seleccionado
 				;$ItemSelected = ControlListView($CrearImagen, "", $lwListDisc,"GetSelected")
 				;encontrar particion principal
+				$Diskpart_pid = Diskpart_creacion_proceso()
+				If Not SeleccionarDisco($Diskpart_pid, $DiscoActual) Then
+					MsgBox($MB_SYSTEMMODAL, "Disco vacio", "zz")
+					ContinueCase
+				Else
+					If  Not dpf_ListarParticiones($Diskpart_pid) Then
+						MsgBox($MB_SYSTEMMODAL, "Disco vacio", "El disco seleccionado no tiene particiones")
+					Else
+						_ArrayDisplay($arParticiones, "lista")
+					EndIf
+				EndIf
+				;If Not dpf_ListarParticiones($Diskpart_pid) Then
+				;	MsgBox($MB_SYSTEMMODAL, "Disco vacio", "El disco seleccionado no tiene particiones")
+
+
 				;	seleccionar disco
 				;	obtener particiones
 				;encontrar particion recovery

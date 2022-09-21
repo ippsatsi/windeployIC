@@ -50,3 +50,113 @@ DISKPART> list part
   Partición 4    Recuperación       522 MB   237 GB
 
 DISKPART>
+
+============================== disco mbr ===================================
+
+C:\Windows\system32>diskpart
+
+Microsoft DiskPart versión 10.0.19041.964
+
+Copyright (C) Microsoft Corporation.
+En el equipo: W10PC
+
+DISKPART> sel disk 0
+
+El disco 0 es ahora el disco seleccionado.
+
+DISKPART> list part
+
+  Núm Partición  Tipo              Tamaño   Desplazamiento
+  -------------  ----------------  -------  ---------------
+  Partición 1    Principal          100 MB  1024 KB
+  Partición 2    Principal          100 GB   101 MB
+  Partición 3    Recuperación       650 MB   100 GB
+
+DISKPART> list vol
+
+  Núm Volumen Ltr  Etiqueta     Fs     Tipo        Tamaño   Estado     Info
+  ----------- ---  -----------  -----  ----------  -------  ---------  --------
+  Volumen 0         System      NTFS   Partición    100 MB  Correcto   Sistema
+  Volumen 1     C   Windows     NTFS   Partición    100 GB  Correcto   Arranque
+  Volumen 2         Recovery    NTFS   Partición    650 MB  Correcto   Oculto
+
+DISKPART> sel part 1
+
+La partición 1 es ahora la partición seleccionada.
+
+DISKPART> detail part
+
+Partición 1
+Tipo          : 07
+Oculta        : No
+Activa        : Sí
+Desplaz. bytes: 1048576
+
+  Núm Volumen Ltr  Etiqueta     Fs     Tipo        Tamaño   Estado     Info
+  ----------- ---  -----------  -----  ----------  -------  ---------  --------
+* Volumen 0         System      NTFS   Partición    100 MB  Correcto   Sistema
+
+DISKPART> sel part 3
+
+La partición 3 es ahora la partición seleccionada.
+
+DISKPART> detail part
+
+Partición 3
+Tipo          : 27
+Oculta        : No
+Activa        : No
+Desplaz. bytes: 107535663104
+
+  Núm Volumen Ltr  Etiqueta     Fs     Tipo        Tamaño   Estado     Info
+  ----------- ---  -----------  -----  ----------  -------  ---------  --------
+* Volumen 2         Recovery    NTFS   Partición    650 MB  Correcto   Oculto
+
+DISKPART> sel part 2
+
+La partición 2 es ahora la partición seleccionada.
+
+DISKPART> detail part
+
+Partición 2
+Tipo          : 07
+Oculta        : No
+Activa        : No
+Desplaz. bytes: 105906176
+
+  Núm Volumen Ltr  Etiqueta     Fs     Tipo        Tamaño   Estado     Info
+  ----------- ---  -----------  -----  ----------  -------  ---------  --------
+* Volumen 1     C   Windows     NTFS   Partición    100 GB  Correcto   Arranque
+
+DISKPART> detail disk
+
+VBOX HARDDISK
+Id. de disco: C2F6DF2D
+Tipo        : SATA
+Estado : En línea
+Ruta        : 0
+Destino     : 0
+Id. de LUN  : 0
+Ruta de la ubicación: PCIROOT(0)#PCI(0D00)#ATA(C00T00L00)
+Estado de solo lectura actual: No
+Solo lectura       : No
+Disco de arranque  : Sí
+Disco de archivo de paginación  : Sí
+Disco de archivo de hibernación  : No
+Disco de volcado  : Sí
+Disco en clúster: No
+
+  Núm Volumen Ltr  Etiqueta     Fs     Tipo        Tamaño   Estado     Info
+  ----------- ---  -----------  -----  ----------  -------  ---------  --------
+  Volumen 0         System      NTFS   Partición    100 MB  Correcto   Sistema
+* Volumen 1     C   Windows     NTFS   Partición    100 GB  Correcto   Arranque
+  Volumen 2         Recovery    NTFS   Partición    650 MB  Correcto   Oculto
+
+DISKPART> list disk
+
+  Núm Disco  Estado      Tamaño   Disp     Din  Gpt
+  ---------- ----------  -------  -------  ---  ---
+* Disco 0    En línea        100 GB      0 B
+  Disco 1    En línea         50 GB    50 GB
+
+DISKPART>
