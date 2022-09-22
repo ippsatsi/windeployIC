@@ -18,6 +18,8 @@ $arTiposPartitions[2][0] = "Recovery"
 $arTiposPartitions[2][1] = "Recuperación"
 $arTiposPartitions[2][2] = "R"
 
+Const $RECOVERY_PART_NUM = 2, $SYSTEM_PART_NUM = 0, $PRINCIPAL_PART_NUM = 1
+
 ;~ Global $bolEnProgresoEnPantalla = False
 ;~ Global $intEnProgresoIndex = 0
 ;~ Global $intNumDiskpartSleeps = 5
@@ -114,7 +116,8 @@ EndFunc
 Func dpf_ExtraerListaParticiones($sSalida)
 	Local $arFilas, $i, $sDato, $arSize
 	$arFilas = $sSalida
-	If	Not QuitarCabeceraTabla($arFilas) Then Return False
+	;si no hay particiones
+	If	Not QuitarCabeceraTabla($arFilas) Or UBound($arFilas) = 0 Then Return False
 	Dim $arParticiones[UBound($arFilas)][6]
 ;~ 	_ArrayDisplay($arFilas)
 	For $i = 0 to UBound($arFilas) - 1

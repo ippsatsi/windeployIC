@@ -31,6 +31,8 @@ Opt("GUIResizeMode", $GUI_DOCKTOP  + $GUI_DOCKSIZE)
 GUICtrlSetState($CrearImagen, @SW_SHOW)
 RefrescarDiscos($lwListDisc)
 
+Global $arParticionesSistema[3]
+
 While 1
 	$nMsg = GUIGetMsg()
 ;~ 	Si no hay eventos o solo se esta moviendo el mouse, no entrara al Switch
@@ -46,28 +48,64 @@ While 1
 			If 	GUICtrlRead($inFileDestino) <> "" And _
 				GUICtrlRead($inNombreImagen) <> "" And _
 				GUICtrlRead($inDescripImagen) <> "" Then
-				MsgBox(0, "prueba boton", "Crear imagen Disco Actual:" & $DiscoActual  )
+				;MsgBox(0, "prueba boton", "Crear imagen Disco Actual:" & $DiscoActual  )
 				;obtener num de disco seleccionado
 				;$ItemSelected = ControlListView($CrearImagen, "", $lwListDisc,"GetSelected")
-				;encontrar particion principal
+
+				;seleccionar disco
 				$Diskpart_pid = Diskpart_creacion_proceso()
-				If Not SeleccionarDisco($Diskpart_pid, $DiscoActual) Then
-					MsgBox($MB_SYSTEMMODAL, "Disco vacio", "zz")
+				If SeleccionarDisco($Diskpart_pid, $DiscoActual) Then
+					;verificamos q tenga particiones
+					If Not dpf_ListarParticiones($Diskpart_pid) Then
+						MsgBox($MB_SYSTEMMODAL, "Disco vacio", "El disco seleccionado no posee ninguna partición")
+						ContinueCase
+					EndIf
+					_ArrayDisplay($arParticiones, "lista")
+				EndIf
+				;verificamos q existan las 3 particiones necesarias q usa el Windows
+				If UBound($arParticiones) < 3 Then
+					MsgBox(0, "Particiones", "El disco solo tiene " & UBound($arParticiones) & " particion(es)"  )
 					ContinueCase
-				Else
-					If  Not dpf_ListarParticiones($Diskpart_pid) Then
-						MsgBox($MB_SYSTEMMODAL, "Disco vacio", "El disco seleccionado no tiene particiones")
-					Else
-						_ArrayDisplay($arParticiones, "lista")
+				EndIf
+				$intPartActual = 0
+				;Encontrar particion sistema
+				If $arDisks[$DiscoActual][7] = "UEFI" Then
+					;si es UEFI, puede q sea la 2 particion la q sea de sistema
+					If Not IsPartitionType($intPartActual, $SYSTEM_PART_NUM) Then
+						$intPartActual += 1
+						If Not IsPartitionType($intPartActual, $SYSTEM_PART_NUM) Then
+							ConsoleWrite("El disco no posee partición de sistema")
+							ContinueCase
+						EndIf
 					EndIf
 				EndIf
-				;If Not dpf_ListarParticiones($Diskpart_pid) Then
-				;	MsgBox($MB_SYSTEMMODAL, "Disco vacio", "El disco seleccionado no tiene particiones")
+				$arParticionesSistema[0] = $arParticiones[$intPartActual][0]
+				ConsoleWrite("arParSis: " & $arParticionesSistema[0] & @CRLF)
+				$arSize = StringSplit($arParticiones[$intPartActual][2], " ", $STR_NOCOUNT)
+				;Confirmamos q tenga particion de sistema
+				If ($arSize[0] > 300 And $arSize[1] = "MB") Or $arSize[1] = "GB" Then
+					ConsoleWrite("No tiene particion de sistema" & @CRLF)
+					ContinueCase
+				EndIf
 
+				_ArrayDisplay($arSize, "size")
 
-				;	seleccionar disco
-				;	obtener particiones
+				;encontrar particion principal
+				$intPartActual += 1
+				If $arDisks[$DiscoActual][7] = "UEFI" Then
+					$intPartActual += 1
+				EndIf
+				$arParticionesSistema[1] = $arParticiones[$intPartActual][0]
+				If Not StringInStr($arParticiones[$intPartActual][1], $arTiposPartitions[1][0]) And Not StringInStr($arParticiones[$intPartActual][1], $arTiposPartitions[1][1]) Then
+					MsgBox($MB_SYSTEMMODAL, "Partición Windows", "El disco no tiene partición con Windows")
+					ContinueCase
+				EndIf
+				ConsoleWrite("arParPrincipal: " & $arParticionesSistema[1] & @CRLF)
+				;Confirmamos q tenga particion de sistema
+				_ArrayDisplay($arParticiones, "lista")
 				;encontrar particion recovery
+
+				;Buscamos la particion del tipo seleccionada
 				;sino encontramos algunas de las 2 particiones lanzar error y cancelar proceso
 				; asignar letras a las 2 particiones
 				; crear imagen de principal
@@ -82,3 +120,12 @@ While 1
 	EndSwitch
 	CambiarEstado()
 WEnd
+
+Func IsPartitionType($intNumPartition, $intTypePartition)
+	If $arParticiones[$intNumPartition][1] <> $arTiposPartitions[$intTypePartition][0] And $arParticiones[$intNumPartition][1] <> $arTiposPartitions[$intTypePartition][1] Then
+		Return False
+	Else
+		Return True
+	EndIf
+EndFunc
+
