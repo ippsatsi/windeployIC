@@ -31,7 +31,7 @@ Opt("GUIResizeMode", $GUI_DOCKTOP  + $GUI_DOCKSIZE)
 GUICtrlSetState($CrearImagen, @SW_SHOW)
 RefrescarDiscos($lwListDisc)
 
-Global $arParticionesSistema[3]
+Global $arParticionesSistema[3][2]
 
 While 1
 	$nMsg = GUIGetMsg()
@@ -68,6 +68,7 @@ While 1
 					ContinueCase
 				EndIf
 				$intPartActual = 0
+
 				;Encontrar particion sistema
 				If $arDisks[$DiscoActual][7] = "UEFI" Then
 					;si es UEFI, puede q sea la 2 particion la q sea de sistema
@@ -79,15 +80,14 @@ While 1
 						EndIf
 					EndIf
 				EndIf
-				$arParticionesSistema[0] = $arParticiones[$intPartActual][0]
-				ConsoleWrite("arParSis: " & $arParticionesSistema[0] & @CRLF)
+				$arParticionesSistema[0][0] = $arParticiones[$intPartActual][0]
+				ConsoleWrite("arParSis: " & $arParticionesSistema[0][0] & @CRLF)
 				$arSize = StringSplit($arParticiones[$intPartActual][2], " ", $STR_NOCOUNT)
 				;Confirmamos q tenga particion de sistema
 				If ($arSize[0] > 300 And $arSize[1] = "MB") Or $arSize[1] = "GB" Then
 					ConsoleWrite("No tiene particion de sistema" & @CRLF)
 					ContinueCase
 				EndIf
-
 				_ArrayDisplay($arSize, "size")
 
 				;encontrar particion principal
@@ -95,19 +95,32 @@ While 1
 				If $arDisks[$DiscoActual][7] = "UEFI" Then
 					$intPartActual += 1
 				EndIf
-				$arParticionesSistema[1] = $arParticiones[$intPartActual][0]
-				If Not StringInStr($arParticiones[$intPartActual][1], $arTiposPartitions[1][0]) And Not StringInStr($arParticiones[$intPartActual][1], $arTiposPartitions[1][1]) Then
+				$arParticionesSistema[1][0] = $arParticiones[$intPartActual][0]
+				If Not IsPartitionType($intPartActual, $PRINCIPAL_PART_NUM) Then
 					MsgBox($MB_SYSTEMMODAL, "Partición Windows", "El disco no tiene partición con Windows")
+				EndIf
+
+;~ 				If Not StringInStr($arParticiones[$intPartActual][1], $arTiposPartitions[1][0]) And Not StringInStr($arParticiones[$intPartActual][1], $arTiposPartitions[1][1]) Then
+;~ 					MsgBox($MB_SYSTEMMODAL, "Partición Windows", "El disco no tiene partición con Windows")
+;~ 					ContinueCase
+;~ 				EndIf
+				ConsoleWrite("arParPrincipal: " & $arParticionesSistema[1][0] & @CRLF)
+
+				;encontrar particion recovery
+				$arParticionesSistema[2][0] = 99 ; 99 es la bandera cuando no encontramos Recovery
+				For $i = 0 to UBound($arParticiones)- 1
+					If IsPartitionType($i, $RECOVERY_PART_NUM) Then
+						$arParticionesSistema[2][0] = $arParticiones[$i][0]
+					EndIf
+				Next
+				If $arParticionesSistema[2][0] = 99 Then
+					MsgBox($MB_SYSTEMMODAL, "Partición Recovery", "El disco no tiene partición Recovery")
 					ContinueCase
 				EndIf
-				ConsoleWrite("arParPrincipal: " & $arParticionesSistema[1] & @CRLF)
-				;Confirmamos q tenga particion de sistema
-				_ArrayDisplay($arParticiones, "lista")
-				;encontrar particion recovery
+				_ArrayDisplay($arParticionesSistema, "ParticionesBasica")
 
-				;Buscamos la particion del tipo seleccionada
-				;sino encontramos algunas de las 2 particiones lanzar error y cancelar proceso
 				; asignar letras a las 2 particiones
+				dpf_AsignarLetra($Diskpart_pid, $arParticionesSistema[2][0])
 				; crear imagen de principal
 				; si no hay imagen de recovery, crear imagen de recovery
 ;~ 				DismCapture(GUICtrlRead($inCapUnidadSrc), _

@@ -357,6 +357,32 @@ Func dpf_AsignarLetraToPartition($intPartitionTypeNumber)
 	Return False
 EndFunc
 
+Func dpf_AsignarLetra($Diskpart_pid, $partNum)
+	Local $sSalida, $sLetter = ".", $Letra
+	If dpf_SeleccionarParticion($Diskpart_pid, $partNum) Then
+		$sSalida = EjecutarComandoDiskpart($Diskpart_pid, "detail part")
+		$sSalida = StringSplit($sSalida, @LF, $STR_NOCOUNT)
+		_ArrayDisplay($sSalida, "detail part")
+		If UBound($sSalida) > 5 And StringInStr($sSalida[1], "Parti") > 0 Then
+;~ 			$sDato = StringMid($arFilas[$i], 9,1)
+			$Letra = StringMid($sSalida[10],16,2)
+			ConsoleWrite("Letra:--" & $Letra & "--" & @CRLF)
+			If StringLen($Letra) = 1 Then
+				ConsoleWrite("Fila10:--" & $Letra & "--" & @CRLF)
+			EndIf
+
+;~ 			ConsoleWrite("Fila10:--" & StringMid($sSalida[10],16,2) & "--" & @CRLF)
+
+		EndIf
+
+;~ 		ConsoleWrite("Fila1:--" & $sSalida[1] & "--" & @CRLF)
+
+
+	EndIf
+
+	Return
+EndFunc
+
 Func dpf_BuscarParticion($Diskpart_pid, $intIndexTipoPartition)
 	;Buscamos y obtenemos el numero de la particion segun su tipo
 	Local $intNumPartRecovery = "N"
