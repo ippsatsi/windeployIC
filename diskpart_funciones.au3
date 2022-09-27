@@ -358,29 +358,61 @@ Func dpf_AsignarLetraToPartition($intPartitionTypeNumber)
 EndFunc
 
 Func dpf_AsignarLetra($Diskpart_pid, $partNum)
-	Local $sSalida, $sLetter = ".", $Letra
+	Local $sSalida, $Letra, $intNumFilas
+	$Letra = dpf_getLetraAsignada($Diskpart_pid, $partNum)
+	;sino tiene letra la particion, le asignamos una
+	If $Letra <> "." Then
+		Return $Letra
+	Else
+		If dpf_SeleccionarParticion($Diskpart_pid, $partNum) Then
+			$sSalida = EjecutarComandoDiskpart($Diskpart_pid, "assign")
+			If StringInStr($sSalida, "correctamente") > 0 Then
+				$Letra = dpf_getLetraAsignada($Diskpart_pid, $partNum)
+			EndIf
+		EndIf
+		Return $Letra
+	EndIf
+EndFunc
+
+Func dpf_RemoverLetra($Diskpart_pid, $partNum)
+	Local $sSalida, $Letra, $intNumFilas
+	$Letra = dpf_getLetraAsignada($Diskpart_pid, $partNum)
+	;sino tiene letra la particion, salimos
+	If $Letra = "." Then
+		Return True
+	Else ; removemos la letra
+		If dpf_SeleccionarParticion($Diskpart_pid, $partNum) Then
+			$sSalida = EjecutarComandoDiskpart($Diskpart_pid, "remove")
+			If StringInStr($sSalida, "correctamente") > 0 Then
+				$Letra = dpf_getLetraAsignada($Diskpart_pid, $partNum)
+				If $Letra = "." Then
+					Return True
+				EndIf
+			EndIf
+		EndIf
+		Return False
+	EndIf
+EndFunc
+
+Func dpf_getLetraAsignada($Diskpart_pid, $partNum)
+	Local $Letra = "."
 	If dpf_SeleccionarParticion($Diskpart_pid, $partNum) Then
 		$sSalida = EjecutarComandoDiskpart($Diskpart_pid, "detail part")
 		$sSalida = StringSplit($sSalida, @LF, $STR_NOCOUNT)
-		_ArrayDisplay($sSalida, "detail part")
-		If UBound($sSalida) > 5 And StringInStr($sSalida[1], "Parti") > 0 Then
-;~ 			$sDato = StringMid($arFilas[$i], 9,1)
-			$Letra = StringMid($sSalida[10],16,2)
-			ConsoleWrite("Letra:--" & $Letra & "--" & @CRLF)
+		$intNumFilas = UBound($sSalida)
+		; verificamos q la salida da un resultado valido
+		If $intNumFilas > 5 And StringInStr($sSalida[1], "Parti") > 0 Then
+			$Letra = StringStripWS(StringMid($sSalida[$intNumFilas-1],16,2), $STR_STRIPALL) ; Extraemos de la ultima fila el dato sobre la letra asignada
+			; si tiene letra asignada, la devolvemos; sino le asignamos letra
 			If StringLen($Letra) = 1 Then
-				ConsoleWrite("Fila10:--" & $Letra & "--" & @CRLF)
+				ConsoleWrite("Letra:--" & $Letra & "--" & @CRLF)
+				Return $Letra
+			Else
+				$Letra = "."
+				Return $Letra
 			EndIf
-
-;~ 			ConsoleWrite("Fila10:--" & StringMid($sSalida[10],16,2) & "--" & @CRLF)
-
 		EndIf
-
-;~ 		ConsoleWrite("Fila1:--" & $sSalida[1] & "--" & @CRLF)
-
-
 	EndIf
-
-	Return
 EndFunc
 
 Func dpf_BuscarParticion($Diskpart_pid, $intIndexTipoPartition)

@@ -24,6 +24,7 @@
 
 #include <windeployic_gui_v2.au3>
 #include <funciones_gui.au3>
+#include <dism2_funciones.au3>
 
 ;Opciones GUI
 Opt("GUIResizeMode", $GUI_DOCKTOP  + $GUI_DOCKSIZE)
@@ -48,9 +49,18 @@ While 1
 			If 	GUICtrlRead($inFileDestino) <> "" And _
 				GUICtrlRead($inNombreImagen) <> "" And _
 				GUICtrlRead($inDescripImagen) <> "" Then
-				;MsgBox(0, "prueba boton", "Crear imagen Disco Actual:" & $DiscoActual  )
+
+				;extraemos la ruta al folder donde ubicamos el archivo WIM
+				$RutaFileDestino = GUICtrlRead($inFileDestino)
+				$intUltimoBackslash = StringInStr($RutaFileDestino, "\",0,-1)
+				ConsoleWrite("el numero es: " & $intUltimoBackslash & @CRLF)
+				$strLocationFolderDestino = StringMid($RutaFileDestino, 1, $intUltimoBackslash)
+
+				;limpiamos el control de los mensajes
+				GUICtrlSetData($outProceso, "")
 				;obtener num de disco seleccionado
-				;$ItemSelected = ControlListView($CrearImagen, "", $lwListDisc,"GetSelected")
+				;con la funcion cambiarEstado() obtenemos el disco seleccionado y lo
+				;guardamos en $DiscoActual
 
 				;seleccionar disco
 				$Diskpart_pid = Diskpart_creacion_proceso()
@@ -60,7 +70,7 @@ While 1
 						MsgBox($MB_SYSTEMMODAL, "Disco vacio", "El disco seleccionado no posee ninguna partición")
 						ContinueCase
 					EndIf
-					_ArrayDisplay($arParticiones, "lista")
+					;_ArrayDisplay($arParticiones, "lista")
 				EndIf
 				;verificamos q existan las 3 particiones necesarias q usa el Windows
 				If UBound($arParticiones) < 3 Then
@@ -88,7 +98,7 @@ While 1
 					ConsoleWrite("No tiene particion de sistema" & @CRLF)
 					ContinueCase
 				EndIf
-				_ArrayDisplay($arSize, "size")
+				;_ArrayDisplay($arSize, "size")
 
 				;encontrar particion principal
 				$intPartActual += 1
@@ -99,11 +109,6 @@ While 1
 				If Not IsPartitionType($intPartActual, $PRINCIPAL_PART_NUM) Then
 					MsgBox($MB_SYSTEMMODAL, "Partición Windows", "El disco no tiene partición con Windows")
 				EndIf
-
-;~ 				If Not StringInStr($arParticiones[$intPartActual][1], $arTiposPartitions[1][0]) And Not StringInStr($arParticiones[$intPartActual][1], $arTiposPartitions[1][1]) Then
-;~ 					MsgBox($MB_SYSTEMMODAL, "Partición Windows", "El disco no tiene partición con Windows")
-;~ 					ContinueCase
-;~ 				EndIf
 				ConsoleWrite("arParPrincipal: " & $arParticionesSistema[1][0] & @CRLF)
 
 				;encontrar particion recovery
@@ -117,17 +122,51 @@ While 1
 					MsgBox($MB_SYSTEMMODAL, "Partición Recovery", "El disco no tiene partición Recovery")
 					ContinueCase
 				EndIf
-				_ArrayDisplay($arParticionesSistema, "ParticionesBasica")
 
 				; asignar letras a las 2 particiones
-				dpf_AsignarLetra($Diskpart_pid, $arParticionesSistema[2][0])
+				$Letra = dpf_AsignarLetra($Diskpart_pid, $arParticionesSistema[1][0])
+				If $Letra = "." Then
+					MsgBox($MB_SYSTEMMODAL, "Asignacion de Letras", "No se pudo asignar una letra a la particon principal")
+					ContinueCase
+				EndIf
+				$arParticionesSistema[1][1] = $Letra
+				$Letra = dpf_AsignarLetra($Diskpart_pid, $arParticionesSistema[2][0])
+				If $Letra = "." Then
+					MsgBox($MB_SYSTEMMODAL, "Asignacion de Letras", "No se pudo asignar una letra a la particon Recovery")
+					ContinueCase
+				EndIf
+				$arParticionesSistema[2][1] = $Letra
+				_ArrayDisplay($arParticionesSistema, "ParticionesBasica")
+				; verificamos directorios
+				If FileExists($arParticionesSistema[1][1] & ":\Windows") Then
+					ConsoleWrite("Carpeta Windows Existe" & @CRLF)
+				Else
+					MsgBox($MB_SYSTEMMODAL, "Carpetas Sistema", "No se encontro la carpeta " & $arParticionesSistema[1][1] & ":\Windows")
+					ContinueCase
+				EndIf
+				If FileExists($arParticionesSistema[2][1] & ":\Recovery") Then
+					ConsoleWrite("Carpeta Recovery Existe" & @CRLF)
+				Else
+					MsgBox($MB_SYSTEMMODAL, "Carpetas Sistema", "No se encontro la carpeta " & $arParticionesSistema[2][1] & ":\Recovery")
+					ContinueCase
+				EndIf
+
 				; crear imagen de principal
+				DismCapture($arParticionesSistema[1][1] & ":", _
+ 					$RutaFileDestino, _
+ 					GUICtrlRead($inNombreImagen), _
+ 					GUICtrlRead($inDescripImagen), _
+ 					GUICtrlRead($cboCompresion), $outProceso, False)
 				; si no hay imagen de recovery, crear imagen de recovery
-;~ 				DismCapture(GUICtrlRead($inCapUnidadSrc), _
-;~ 					GUICtrlRead($inFileDestino), _
-;~ 					GUICtrlRead($inNombreImagen), _
-;~ 					GUICtrlRead($inDescripImagen), _
-;~ 					GUICtrlRead($cboCompresion), $outProceso, False)
+				If Not FileExists($strLocationFolderDestino & "Recovery.wim") Then
+					DismCapture($arParticionesSistema[2][1] & ":", _
+ 					$strLocationFolderDestino & "Recovery.wim", _
+ 					"Recovery Image", _
+ 					"Recovery Image File", _
+ 					GUICtrlRead($cboCompresion), $outProceso, False)
+				Else
+					ConsoleWrite("Ya existe " & $strLocationFolderDestino & "Recovery.wim, no se creará imagen Recovery" & @CRLF)
+				EndIf
 			EndIf
 
 	EndSwitch
