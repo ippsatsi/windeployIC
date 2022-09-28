@@ -2,6 +2,11 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Outfile_x64=windeployIC.exe
 #AutoIt3Wrapper_UseX64=y
+#AutoIt3Wrapper_Res_Description=Creador de imagenes para windeploy
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.1
+#AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
+#AutoIt3Wrapper_Res_ProductName=windeploy_ic
+#AutoIt3Wrapper_Res_ProductVersion=1.0.0
 #AutoIt3Wrapper_Res_HiDpi=Y
 #AutoIt3Wrapper_Run_AU3Check=n
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
@@ -107,6 +112,7 @@ Func DetectarParticiones($Append)
 		;_ArrayDisplay($arParticiones, "lista")
 	EndIf
 	;verificamos q existan las 3 particiones necesarias q usa el Windows
+	ConsoleWrite("particiones necesarias: " & UBound($arParticiones) & @CRLF)
 	If UBound($arParticiones) < 3 Then
 		MsgBox(0, "Particiones", "El disco solo tiene " & UBound($arParticiones) & " particion(es)"  )
 		Return False
@@ -124,6 +130,7 @@ Func DetectarParticiones($Append)
 			EndIf
 		EndIf
 	EndIf
+
 	$arParticionesSistema[0][0] = $arParticiones[$intPartActual][0]
 	ConsoleWrite("arParSis: " & $arParticionesSistema[0][0] & @CRLF)
 	$arSize = StringSplit($arParticiones[$intPartActual][2], " ", $STR_NOCOUNT)
@@ -152,6 +159,7 @@ Func DetectarParticiones($Append)
 			$arParticionesSistema[2][0] = $arParticiones[$i][0]
 		EndIf
 	Next
+	ConsoleWrite("Particon Recovery: " & $arParticionesSistema[2][0] & @CRLF)
 	If $arParticionesSistema[2][0] = 99 Then
 		MsgBox($MB_SYSTEMMODAL, "Partición Recovery", "El disco no tiene partición Recovery")
 		Return False
