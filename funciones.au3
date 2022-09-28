@@ -212,18 +212,30 @@ Func CambiarEstado()
 ;~ 	Return $mensaje
 ;~ EndFunc
 
-;~ Func f_ProgresoTexto($intValor, $intMOD)
-;~ 	If $intValor > 100 Or $intValor < 0 Then Return "Error en lectura progreso"
-;~ 	$strProgresoTexto = "   ["
-;~ 	For $i = 0 To $intValor
-;~ 		If Mod($i,$intMOD) = 0 Then $strProgresoTexto &= "="
-;~ 	Next
-;~ 	For $i = ($intValor + 1) To 100
-;~ 		If Mod($i,$intMOD) = 0 Then $strProgresoTexto &= "  "
-;~ 	Next
-;~ 	$strProgresoTexto &= "]"
-;~ 	Return $strProgresoTexto
-;~ EndFunc
+Func f_ProgresoTexto($intValor, $intMOD)
+	If $intValor > 100 Or $intValor < 0 Then Return "Error en lectura progreso"
+	$strProgresoTexto = "   ["
+	For $i = 0 To $intValor
+		If Mod($i,$intMOD) = 0 Then $strProgresoTexto &= "="
+	Next
+	For $i = ($intValor + 1) To 100
+		If Mod($i,$intMOD) = 0 Then $strProgresoTexto &= "  "
+	Next
+	$strProgresoTexto &= "]"
+	;colocamos el porcentaje en el centro del texto
+;~ 	$lenValor = Floor(StringLen($intValor)/2)
+	If $intValor > 9 Then
+		$lenValor = 2
+	Else
+		$lenValor = 1
+	EndIf
+
+	$lenProgresoString = Floor(StringLen($strProgresoTexto)/2)
+	$posReemplazo = ($lenProgresoString - $lenValor) + 3
+	;ConsoleWrite("++" & $lenProgresoString & ";;" & $posReemplazo & @CRLF)
+	$strProgresoTexto = StringReplace($strProgresoTexto, $posReemplazo , $intValor & "%") ; desplazamos 3 posiciones por los espacios antes del "["
+	Return $strProgresoTexto
+EndFunc
 
 ;~ Func LimpiarVentanaProgreso()
 ;~ 	$gi_AlmacenTextoMensajes = ""
