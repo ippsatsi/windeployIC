@@ -6,7 +6,7 @@
 #include <StaticConstants.au3>
 #include <WindowsConstants.au3>
 
-$version = "1.0.0"
+$version = "1.0.5"
 #Region ### START Koda GUI section ### Form=crearimagen_v2.kxf
 $CrearImagen = GUICreate("Windeploy ImageCreator " & $version, 634, 715, 179, 118)
 $grpCrearImagen = GUICtrlCreateGroup("CrearImagen", 8, 186, 617, 249)
