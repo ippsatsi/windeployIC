@@ -159,7 +159,7 @@ Func DetectarParticiones($Append)
 			$arParticionesSistema[2][0] = $arParticiones[$i][0]
 		EndIf
 	Next
-	ConsoleWrite("Particon Recovery: " & $arParticionesSistema[2][0] & @CRLF)
+	ConsoleWrite("Particion Recovery: " & $arParticionesSistema[2][0] & @CRLF)
 	If $arParticionesSistema[2][0] = 99 Then
 		MsgBox($MB_SYSTEMMODAL, "Partición Recovery", "El disco no tiene partición Recovery")
 		Return False

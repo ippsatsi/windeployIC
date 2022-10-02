@@ -170,4 +170,10 @@ DISKPART> list disk
 * Disco 0    En línea        100 GB      0 B
   Disco 1    En línea         50 GB    50 GB
 
-DISKPART>
+DISKPART> sel part 5
+
+La partición 5 es ahora la partición seleccionada.
+
+DISKPART> del part
+
+DiskPart eliminó correctamente la partición seleccionada.
