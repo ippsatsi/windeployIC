@@ -310,7 +310,7 @@ Func TareaComandosDiskpart($arrayComando)
 			EndIf
 			$intBarraProgresoGUI += $floatRatioProgreso
 			gi_MostrarAvanceBarraProgresoGUI($InstProgreso, $intBarraProgresoGUI)
-			;Hablitamos sondeo del batan cancelar entre cada tarea
+			;Hablitamos sondeo del boton cancelar entre cada tarea
 			;hacemos un barrido de los eventos q se van encolando
 			;se encolan muchos eventos, ya q al mover el mouse se van generando eventos
 			$n = 0
