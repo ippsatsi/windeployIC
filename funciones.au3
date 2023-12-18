@@ -212,7 +212,7 @@ Func CambiarEstado()
 ;~ 	Return $mensaje
 ;~ EndFunc
 
-Func f_ProgresoTexto($intValor, $intMOD)
+Func f_ProgresoTexto1($intValor, $intMOD)
 	If $intValor > 100 Or $intValor < 0 Then Return "Error en lectura progreso"
 	$strProgresoTexto = "   ["
 	For $i = 0 To $intValor
@@ -264,66 +264,9 @@ EndFunc
 ;~ 	LimpiarVentanaProgreso()
 ;~ 	f_AsignarParametros()
 
-;~ 	GUISetState(@SW_SHOW, $FormMensajesProgreso)
-;~    ;ConsoleWrite("Disco actual: " & $DiscoActual & @CRLF)
-;~ 	f_MensajeTitulo("Iniciando Instalacion en Disco")
-;~ 	MensajesProgreso($MensajesInstalacion, "Preparando disco " & $DiscoActual & ":")
-;~ 	FormProgreso_lblProgreso("Preparando disco... ")
-;~ 	If Not PrepararDiscoNuevo() Then Return False
-;~ 	If Not ValidarParticiones() Then Return False
-;~ 	If Not df_AplicarImagen($pathFileWimSel, $intIndexImageSel) Then Return False
-;~ 	If Not f_ActivarParticiones() Then Return False
-;~ 	MensajesProgreso($MensajesInstalacion, "Finalizaron todas las tareas correctamente")
-;~ 	MensajesProgreso($MensajesInstalacion, "Se instalo correctamente la imagen en el Disco")
-;~ 	FormProgreso_lblProgreso("Instalacion correcta de la imagen")
-;~ 	GUICtrlSetState($Cancelar, $GUI_ENABLE)
-;~ 	GUICtrlSetData($Cancelar, "Cerrar")
-;~     WinSetTitle($FormMensajesProgreso, "", "Instalacion finalizada correctamente")
-;~ 	Return True
-;~ EndFunc
 
-;~ Func f_AsignarParametros()
-;~ 	$strSistemaSel = LeerSistemaSeleccionado()
-;~ 	$pathFileWimSel = GUICtrlRead($inFileImagePath)
-;~ 	$intIndexImageSel = GUICtrlRead($InIndexImage)
-;~ 	$strImageNameSel = GUICtrlRead($InImageName)
-;~ EndFunc
 
-;~ Func f_ActivarParticiones()
-;~ 	f_MensajeTitulo("Activando Particiones de Sistema y Recovery:")
-;~ 	FormProgreso_lblProgreso("Activando Particiones ...")
-;~ 	;activamos particion sistema
-;~ 	If Not f_TareaCMD($arrayComandos, 0, $strSistemaSel) Then Return False
-;~ 	$intBarraProgresoGUI = 84
-;~ 	gi_MostrarAvanceBarraProgresoGUI($InstProgreso, $intBarraProgresoGUI)
-;~ 	;creamos carpeta Recovery
-;~ 	If DirCreate($rutaWinre) Then
-;~ 		MensajesProgreso($MensajesInstalacion, "    " & $arrayComandos[1][0])
-;~ 	Else
-;~ 		MensajesProgreso($MensajesInstalacion, "No se pudo crear la carpeta Recovery")
-;~ 		Return False
-;~ 	EndIf
-;~ 	$intBarraProgresoGUI = 88
-;~ 	gi_MostrarAvanceBarraProgresoGUI($InstProgreso, $intBarraProgresoGUI)
-;~ 	;ubicar la ruta de WinRE
-;~ 	Local $rutaFileWinREaCopiar = f_UbicarWinreImagen()
-;~ 	If $rutaFileWinREaCopiar = '' Then
-;~ 		MensajesProgreso($MensajesInstalacion, "No se ubica el archivo WinRE, extraerlo con boton Obtener WinRE y copiarlo en la raiz del USB. No puede continuar la instalacion")
-;~ 		Return False
-;~ 	EndIf
-;~ 	MensajesProgreso($MensajesInstalacion, "    Ubicado WinRE en: " & $rutaFileWinREaCopiar)
-;~ 	$intBarraProgresoGUI = 92
-;~ 	gi_MostrarAvanceBarraProgresoGUI($InstProgreso, $intBarraProgresoGUI)
-;~ 	;copiado de imagen winre
-;~ 	If Not f_TareaCMD($arrayComandos, 2, $rutaFileWinREaCopiar) Then Return False
-;~ 	$intBarraProgresoGUI = 96
-;~ 	gi_MostrarAvanceBarraProgresoGUI($InstProgreso, $intBarraProgresoGUI)
-;~ 	;registrando WinRE: Global $rutaWinre
-;~ 	If Not f_TareaCMD($arrayComandos, 3, $rutaWinre) Then Return False
-;~ 	$intBarraProgresoGUI = 100
-;~ 	gi_MostrarAvanceBarraProgresoGUI($InstProgreso, $intBarraProgresoGUI)
-;~ 	Return True
-;~ EndFunc
+
 
 Func f_ReemplazarParametro($comando, $parametro)
 	if $parametro <> '' Then
@@ -333,26 +276,7 @@ Func f_ReemplazarParametro($comando, $parametro)
 	EndIf
 EndFunc
 
-;~ Func f_TareaCMD($arrayComando, $intNumTarea, $parametro = "")
-;~ 	Local $strTxtCommando, $mensaje
-;~ 	$comando = f_ReemplazarParametro($arrayComando[$intNumTarea][1], $parametro)
-;~ 	$salida_correcta = $arrayComando[$intNumTarea][2]
-;~ 	$nombreTarea = "    " & $arrayComando[$intNumTarea][0]
-;~ 	$otro_comando = $arrayComando[$intNumTarea][3]
-;~ 	MensajesProgreso($MensajesInstalacion, $nombreTarea)
-;~ 	;Ejecutamos el comando
-;~ 	Local $psTarea = Run(@ComSpec & " /c " & $comando, "", @SW_HIDE, $STDERR_MERGED)
-;~ 	ProcessWaitClose($psTarea)
-;~ 	Local $readConsole = StdoutRead($psTarea)
-;~ 	If StringInStr($readConsole, $salida_correcta) Then
-;~ 		Return True
-;~ 	Else
-;~ 		MensajesProgreso($MensajesInstalacion, "Error: " & $nombreTarea & " no se pudo completar la tarea")
-;~ 		MensajesProgreso($MensajesInstalacion, "Este comando se ejecuto:" & @CRLF & $comando)
-;~ 		MensajesProgreso($MensajesInstalacion, "La tarea produjo esta salida:" & @CRLF & $readConsole)
-	;;	GUICtrlSetData($xContenedorCtrl[1], $readConsole & @CRLF, 1)
-;~ 		Return False
-;~ 	EndIf
+
 ;~ EndFunc
 
 ;~ Func f_UbicarWinreImagen()
@@ -392,7 +316,7 @@ Func f_CambiarAMinutos($segundos)
 	EndIf
 EndFunc
 
-Func f_UltNElemArray_to_Texto($arSalida, $intIndice, $intN)
+Func f_UltNElemArray_to_Texto1($arSalida, $intIndice, $intN)
 	Local $strTexto = ""
 	If UBound($arSalida) < $intN Then Return "Error en array"
 	For $i = ($intIndice - $intN) To $intIndice

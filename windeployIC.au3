@@ -29,6 +29,7 @@
 
 #include <windeployic_gui.au3>
 #include <funciones_gui.au3>
+#include <barra_progreso_en_texto.au3>
 #include <dism_funciones.au3>
 
 ;Opciones GUI
@@ -96,6 +97,8 @@ EndFunc
 
 Func DetectarParticiones($Append)
 
+	$gi_AlmacenTextoMensajes = ""
+	GUICtrlSetData($outProceso, $gi_AlmacenTextoMensajes)
 	;extraemos la ruta al folder donde ubicamos el archivo WIM
 	$RutaFileDestino = GUICtrlRead($inFileDestino)
 	$intUltimoBackslash = StringInStr($RutaFileDestino, "\",0,-1)

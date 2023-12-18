@@ -28,3 +28,6 @@ Func SelectFileDialog($tipo, $inControl,$mensaje,$filtro)
 	EndIf
 	Return $RutaArchivo
 EndFunc
+
+
+

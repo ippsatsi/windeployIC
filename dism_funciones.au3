@@ -38,87 +38,12 @@ Func DismCapture($UnidadCap, $FilePath, $ImageName, $ImageDescrip,$compresion, $
 								'" /Description:"' & $ImageDescrip & _
 								($bolAppend ? '"' : '" /Compress:' & $compresion)
 	Local $psTarea = Run(@ComSpec & " /c " & $txtCommandLine, "", @SW_HIDE, $STDOUT_CHILD)
-	Local $value = 0, $line, $msj_sin_progreso, $mensajes
-	Local $percent = 0
-	Local $hTimer = TimerInit()
-	Local $strProgresoTexto = ""
-	Local $intPrcentajeTarea = 60
-	Local $floatRatioProgreso = $intPrcentajeTarea/100
-	Local $arSalida
-	Local $strMensajesAnteriores = GUICtrlRead($Salida) & @CRLF
-	While ProcessExists($psTarea)
-		$mensajes = $txtCommandLine & @CRLF & StdoutRead($psTarea, True)
-		$msj_sin_progreso = StringMid($mensajes, 1, StringInStr($mensajes,"[", 0,1) - 1 ) & @CRLF
-		$line = StdoutRead($psTarea, True)
-		If StringInStr($line, ".0%") Then
-			;separamos a partir del .0%, para hallar el % de progreso
-			$line1 = StringSplit($line, ".0%",$STR_ENTIRESPLIT)
-			$value = StringRight($line1[$line1[0] - 1], 2) ; agarramos el ultimo % leido
-		EndIf
-		; Si llega a 00 es porque llego al 100% y finalizo correctamente
-		If $value == "00" Then $value = 100
-		;aqui esta el codigo que detectara mientras se esta aplicando la imagen
-		;si el usuario desea cancelarlo
-		Local $n = 0
-		;codigo para cancelacion
-		;ConsoleWrite("n:" & $n & @CRLF)
-		While $n < 15 ;fijamos en 10 el numero de eventos a procesar de la cola
-			;ConsoleWrite("while n:" & $n & @CRLF)
-			;ConsoleWrite("status Cancelar :" & $statusCancelacion & @CRLF)
-			If SondearCancelacionCierre() Then
-				;ConsoleWrite("status:" & $n & @CRLF)
-				f_KillIfProcessExists("Dism.exe")
-;~ 				ActualizandoStatus("Operacion Cancelada")
-;~ 				MensajesProgreso($MensajesInstalacion, " ")
-;~ 				MensajesProgreso($MensajesInstalacion, "   ---- Operacion Cancelada ----   ")
-				GUICtrlSetData($Salida, GUICtrlRead($Salida) & @CRLF & @CRLF & "Y   ---- Operacion Cancelada ----   " & @CRLF)
-				Return False
-			EndIf
-			Sleep(1)
-			$n = $n + 1
-		WEnd
-		;fin del codigo para cancelar la operacion
-		Sleep(100)
-		If $percent <> $value Then
-			;calculamos el tiempo transcurrido y estimado
-			$iRatioRestante = (100 - $value)/$value
-			$mmTiempoTranscurrido = TimerDiff($hTimer)
-			$mmTiempoEstimadoTotal = ($mmTiempoTranscurrido * $iRatioRestante) + $mmTiempoTranscurrido
-			$ssTiempoTranscurrido = Floor($mmTiempoTranscurrido/1000)
-			$ssTiempoTotal = Floor($mmTiempoEstimadoTotal/1000)
-			;$intBarraProgresoGUI += $floatRatioProgreso*($value - $percent)
-			;gi_MostrarAvanceBarraProgresoGUI($InstProgreso, $intBarraProgresoGUI)
-			$strProgresoTexto = f_ProgresoTexto($value, 3)
-			;f_MensajesProgreso_MostrarProgresoTexto($MensajesInstalacion, $strProgresoTexto)
-			GUICtrlSetData($Salida, $strMensajesAnteriores & $msj_sin_progreso & $strProgresoTexto)
-;~ 			FormProgreso_lblProgreso("Aplicando imagen, Total Est: " & f_CambiarAMinutos($ssTiempoTotal) ,"Transcurrido: " & f_CambiarAMinutos($ssTiempoTranscurrido)& "  " & $value & "%")
-			$percent = $value
-		EndIf
-		;If $value = 100 Then ExitLoop
-	WEnd
-	$mensajes = StdoutRead($psTarea, True)
-	$arSalida = StringSplit($mensajes, @LF)
-	ConsoleWrite("----Salida DismCapture: " & $mensajes & @CRLF)
-	GUICtrlSetData($Salida, $strMensajesAnteriores & $msj_sin_progreso & $strProgresoTexto & @CRLF &$arSalida[Ubound($arSalida)-2])
+
+
+	MensajesProgreso($Salida, $txtCommandLine)
+	f_MostrarProgresoTexto($Salida, $psTarea, SondearCancelacionCierre, "Dism.exe")
 EndFunc
 
-Func DismApply( $FilePathWim, $UnidadToApply, $ImageIndex, $Salida)
-;~ 	DISM.exe /Apply-Image
-;~ 			/ImageFile:<path_to_image_file>
-;~ 			[/SWMFile:<pattern>]
-;~ 			/ApplyDir:<target_directory> {/Index:< image_index> | /Name:<image_name>}
-;~ 			[/CheckIntegrity] [/Verify] [/NoRpFix] [/ConfirmTrustedFile] [/WIMBoot (deprecated)] [/Compact] [/EA]
-
-	Local $txtCommandLine = 'dism /Apply-Image /ImageFile:"' & $FilePathWim & _
-								'" /ApplyDir:' & $UnidadToApply & _
-								' /Index:"' & $ImageIndex & '"'
-;~ 								'" /ScratchDir:" '
-	Local $psTarea = Run(@ComSpec & " /c " & $txtCommandLine, "", @SW_HIDE, $STDOUT_CHILD)
-	While ProcessExists($psTarea)
-		Local $mensajes = $txtCommandLine & @CRLF & StdoutRead($psTarea, True)
-		GUICtrlSetData($Salida, $mensajes)
-	WEnd
-EndFunc
 
 Func DismMount( $RutaMontaje, $FileIma, $ImageIndex, $Salida)
 ;~ 	Dism /Mount-Image /ImageFile:<path_to_image_file>
