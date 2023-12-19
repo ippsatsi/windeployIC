@@ -60,15 +60,22 @@ Func CambiarEstado()
 	Local $ItemSelected
 	$ItemSelected = ControlListView($CrearImagen, "", $lwListDisc,"GetSelected")
 	If $ItemSelected = "" Then
-;~ 		GUICtrlSetData($ctrlSelModoDisco, "Seleccione")
-;~ 		GUICtrlSetState($ctrlSelModoDisco, $GUI_DISABLE)
+
 		GUICtrlSetState($btCrear, $GUI_DISABLE)
 		GUICtrlSetState($btAgregar, $GUI_DISABLE)
+		GUICtrlSetState($ckboxAddDriver, $GUI_DISABLE)
 		$DiscoActual = "N"
 	Else
-;~ 		GUICtrlSetState($ctrlSelModoDisco, $GUI_ENABLE)
+
+
 		GUICtrlSetState($btCrear, $GUI_ENABLE)
-		GUICtrlSetState($btAgregar, $GUI_ENABLE)
+;~ 		Validamos el ckboxAddDriver para habilitar el boton solo cuando no este con check
+		If Not _IsChecked($ckboxAddDriver) Then
+			GUICtrlSetState($btAgregar, $GUI_ENABLE)
+		Else
+			GUICtrlSetState($btAgregar, $GUI_DISABLE)
+		EndIf
+		GUICtrlSetState($ckboxAddDriver, $GUI_ENABLE)
 		$DiscoActual = $ItemSelected
 	EndIf
  EndFunc

@@ -55,6 +55,23 @@ While 1
 				Exit
 			EndIf
 
+		Case $ckboxAddDriver
+			If _IsChecked($ckboxAddDriver) Then
+				GUICtrlSetState($inNombreImagen, $GUI_DISABLE)
+				GUICtrlSetState($inDescripImagen, $GUI_DISABLE)
+				GUICtrlSetState($inFileDestino, $GUI_DISABLE)
+				GUICtrlSetState($btCrear, $GUI_DISABLE)
+				GUICtrlSetData($btCrear, "Agregar driver")
+
+			Else
+				GUICtrlSetState($inNombreImagen, $GUI_ENABLE)
+				GUICtrlSetState($inDescripImagen, $GUI_ENABLE)
+				GUICtrlSetState($inFileDestino, $GUI_ENABLE)
+				GUICtrlSetState($btCrear, $GUI_ENABLE)
+				GUICtrlSetData($btCrear, "Crear Imagen")
+			EndIf
+
+
 		Case $btFileDestino
 			$RutaFile = SelectFileDialog("save", $inFileDestino, "Seleccione el archivo WIM", "wim")
 		Case $btCrear
@@ -99,10 +116,12 @@ Func DetectarParticiones($Append)
 
 	$gi_AlmacenTextoMensajes = ""
 	GUICtrlSetData($outProceso, $gi_AlmacenTextoMensajes)
-	;extraemos la ruta al folder donde ubicamos el archivo WIM
-	$RutaFileDestino = GUICtrlRead($inFileDestino)
-	$intUltimoBackslash = StringInStr($RutaFileDestino, "\",0,-1)
-	$strLocationFolderDestino = StringMid($RutaFileDestino, 1, $intUltimoBackslash)
+	;extraemos la ruta al folder donde ubicamos el archivo WIM, solo si la funcion de "solo agregar driver no esta habilitada"
+	If Not _IsChecked($idControlID) Then
+		$RutaFileDestino = GUICtrlRead($inFileDestino)
+		$intUltimoBackslash = StringInStr($RutaFileDestino, "\",0,-1)
+		$strLocationFolderDestino = StringMid($RutaFileDestino, 1, $intUltimoBackslash)
+	EndIf
 	GUICtrlSetData($outProceso, "Iniciando procedimientos, espere ...." & @CRLF)
 	;seleccionar disco
 	$Diskpart_pid = Diskpart_creacion_proceso()
@@ -197,22 +216,28 @@ Func DetectarParticiones($Append)
 	EndIf
 
 	gi_CerrarToCancelar()
-	; crear imagen de principal
-	DismCapture($arParticionesSistema[1][1] & ":", _
-			$RutaFileDestino, _
-			GUICtrlRead($inNombreImagen), _
-			GUICtrlRead($inDescripImagen), _
-			GUICtrlRead($cboCompresion), $outProceso, $Append)
-	; si no hay imagen de recovery, crear imagen de recovery
-	If Not FileExists($strLocationFolderDestino & "Recovery.wim") Then
-		DismCapture($arParticionesSistema[2][1] & ":", _
-			$strLocationFolderDestino & "Recovery.wim", _
-			"Recovery Image", _
-			"Recovery Image File", _
-			GUICtrlRead($cboCompresion), $outProceso, False)
+;~ 	 solo si la funcion de "solo agregar driver no esta habilitada"
+	If Not _IsChecked($idControlID) Then
+		; crear imagen de principal
+		DismCapture($arParticionesSistema[1][1] & ":", _
+				$RutaFileDestino, _
+				GUICtrlRead($inNombreImagen), _
+				GUICtrlRead($inDescripImagen), _
+				GUICtrlRead($cboCompresion), $outProceso, $Append)
+		; si no hay imagen de recovery, crear imagen de recovery
+		If Not FileExists($strLocationFolderDestino & "Recovery.wim") Then
+			DismCapture($arParticionesSistema[2][1] & ":", _
+				$strLocationFolderDestino & "Recovery.wim", _
+				"Recovery Image", _
+				"Recovery Image File", _
+				GUICtrlRead($cboCompresion), $outProceso, False)
+		Else
+			ConsoleWrite("Ya existe " & $strLocationFolderDestino & "Recovery.wim, no se creará imagen Recovery" & @CRLF)
+			GUICtrlSetData($outProceso, GUICtrlRead($outProceso) & @CRLF & @CRLF & "Ya existe " & $strLocationFolderDestino & "Recovery.wim, no se creará imagen Recovery" & @CRLF)
+		EndIf
 	Else
-		ConsoleWrite("Ya existe " & $strLocationFolderDestino & "Recovery.wim, no se creará imagen Recovery" & @CRLF)
-		GUICtrlSetData($outProceso, GUICtrlRead($outProceso) & @CRLF & @CRLF & "Ya existe " & $strLocationFolderDestino & "Recovery.wim, no se creará imagen Recovery" & @CRLF)
+;~ aqui llamamos a buscar inf, y luego con llamamos a dism add driver
+
 	EndIf
 	gi_CancelarToCerrar()
 	Return True
