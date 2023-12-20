@@ -153,4 +153,5 @@ Func f_MostrarProgresoTexto($Salida, $psTarea, $func_detect_cancelacion, $progra
 ;==========================
 	MensajesProgreso($Salida, "Proceso finalizado")
 	MensajesProgreso($Salida, @CRLF & "===========Salida del comando===============" & @CRLF & f_ExtraeResumenComando($sSalida, 4, 3))
+	MensajesProgreso($Salida, @CRLF & "===========Final salida del comando===============" & @CRLF)
 EndFunc

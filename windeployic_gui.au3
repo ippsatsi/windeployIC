@@ -6,7 +6,7 @@
 #include <StaticConstants.au3>
 #include <WindowsConstants.au3>
 
-$version = "1.0.5"
+$version = "2.0.0"
 #Region ### START Koda GUI section ### Form=crearimagen_v2.kxf
 $CrearImagen = GUICreate("Windeploy ImageCreator " & $version, 634, 715, 179, 118)
 $grpCrearImagen = GUICtrlCreateGroup("CrearImagen", 8, 186, 617, 249)
@@ -24,7 +24,7 @@ $inFileDestino = GUICtrlCreateInput("", 120, 225, 401, 21)
 $btFileDestino = GUICtrlCreateButton("Examinar", 536, 224, 75, 25)
 $btCrear = GUICtrlCreateButton("Crear Imagen", 448, 401, 75, 25)
 $btAgregar = GUICtrlCreateButton("Agregar Imagen", 532, 401, 83, 25)
-$ckboxAddDriver = GUICtrlCreateCheckbox("Solo agregar driver", 32, 405, 120, 17)
+$ckboxAddDriver = GUICtrlCreateCheckbox("Solo agregar driver al SO", 32, 405, 140, 17)
 GUICtrlCreateGroup("", -99, -99, 1, 1)
 $outProceso = GUICtrlCreateEdit("", 16, 451, 601, 201, BitOR($GUI_SS_DEFAULT_EDIT,$ES_READONLY))
 GUICtrlSetData(-1, "")

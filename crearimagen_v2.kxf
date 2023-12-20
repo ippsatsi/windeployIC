@@ -229,9 +229,9 @@
 					<properties>
 						<property name="Left" vt="Int8">24</property>
 						<property name="Top" vt="Int16">219</property>
-						<property name="Width" vt="Int8">120</property>
+						<property name="Width" vt="Int16">140</property>
 						<property name="Height" vt="Int8">17</property>
-						<property name="Caption" vt="String">Solo agregar driver</property>
+						<property name="Caption" vt="String">Solo agregar driver al SO</property>
 						<property name="TabOrder" vt="Int8">6</property>
 						<property name="CtrlStyle" vt="Int32">1342242819</property>
 						<property name="CtrlExStyle" vt="Int8">0</property>

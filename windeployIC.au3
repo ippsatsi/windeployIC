@@ -77,7 +77,8 @@ While 1
 		Case $btCrear
 			If 	GUICtrlRead($inFileDestino) <> "" And _
 				GUICtrlRead($inNombreImagen) <> "" And _
-				GUICtrlRead($inDescripImagen) <> "" Then
+				GUICtrlRead($inDescripImagen) <> "" Or _
+				_IsChecked($ckboxAddDriver) Then
 
 				;limpiamos el control de los mensajes
 				GUICtrlSetData($outProceso, "")
@@ -117,7 +118,7 @@ Func DetectarParticiones($Append)
 	$gi_AlmacenTextoMensajes = ""
 	GUICtrlSetData($outProceso, $gi_AlmacenTextoMensajes)
 	;extraemos la ruta al folder donde ubicamos el archivo WIM, solo si la funcion de "solo agregar driver no esta habilitada"
-	If Not _IsChecked($idControlID) Then
+	If Not _IsChecked($ckboxAddDriver) Then
 		$RutaFileDestino = GUICtrlRead($inFileDestino)
 		$intUltimoBackslash = StringInStr($RutaFileDestino, "\",0,-1)
 		$strLocationFolderDestino = StringMid($RutaFileDestino, 1, $intUltimoBackslash)
@@ -217,7 +218,7 @@ Func DetectarParticiones($Append)
 
 	gi_CerrarToCancelar()
 ;~ 	 solo si la funcion de "solo agregar driver no esta habilitada"
-	If Not _IsChecked($idControlID) Then
+	If Not _IsChecked($ckboxAddDriver) Then
 		; crear imagen de principal
 		DismCapture($arParticionesSistema[1][1] & ":", _
 				$RutaFileDestino, _
@@ -236,8 +237,32 @@ Func DetectarParticiones($Append)
 			GUICtrlSetData($outProceso, GUICtrlRead($outProceso) & @CRLF & @CRLF & "Ya existe " & $strLocationFolderDestino & "Recovery.wim, no se creará imagen Recovery" & @CRLF)
 		EndIf
 	Else
-;~ aqui llamamos a buscar inf, y luego con llamamos a dism add driver
+		;~ aqui llamamos a buscar inf, y luego con llamamos a dism add driver
+		$RutaFileInf = SelectFileDialog("driver", -1, "Seleccione el archivo .inf del driver", "inf")
+		ConsoleWrite("Archivo inf: " & $RutaFileInf)
+		MensajesProgreso($outProceso, "------------------- Añadimos Driver a la Particion Windows -----------------------" & @CRLF)
+		MensajesProgreso($outProceso, DismAddDriver($RutaFileInf, $arParticionesSistema[1][1] & ":", $outProceso))
+		;~	creamos carpeta mount
+		$MountWinreFolder = $arParticionesSistema[1][1] & ":\mount"
+		$RutaWinreWim = $arParticionesSistema[2][1] & ":\Recovery\WindowsRE\winre.wim"
+		If Not FileExists($MountWinreFolder) Then
+			DirCreate($MountWinreFolder)
+			MensajesProgreso($outProceso, "------------------- Creamos carpeta " & $MountWinreFolder & " para montar Winre.wim------------------- " & @CRLF)
+;~ 			GUICtrlSetData($outProceso, "Creamos carpeta " & $MountWinreFolder & " para montar Winre.wim" & @CRLF)
+		EndIf
+		;~ montamos imagen
+		MensajesProgreso($outProceso, "------------------- Montamos Winre.wim ------------------- " & @CRLF)
 
+		DismMount( $MountWinreFolder, $RutaWinreWim, 1, $outProceso)
+		;~ añadimos drivers
+		MensajesProgreso($outProceso, "------------------- Añadimos Driver a la Particion Recovery -----------------------" & @CRLF)
+		MensajesProgreso($outProceso, DismAddDriver($RutaFileInf, $MountWinreFolder, $outProceso))
+		;~ desmontamos
+		MensajesProgreso($outProceso, "------------------- Desmontamos Winre.wim -----------------------" & @CRLF)
+		DismUnmount($MountWinreFolder, 1, $outProceso)
+		;~	borramos carpeta  de montaje
+		DirRemove($MountWinreFolder, 1)
+		MensajesProgreso($outProceso, "+++++++++++++++++++++ Finalizo proceso de agregar driver al SO ++++++++++++++++++++++++++" & @CRLF)
 	EndIf
 	gi_CancelarToCerrar()
 	Return True

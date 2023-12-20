@@ -55,11 +55,10 @@ Func DismMount( $RutaMontaje, $FileIma, $ImageIndex, $Salida)
 								'" /Index:"' & $ImageIndex & '"'
 
 	Local $psTarea = Run(@ComSpec & " /c " & $txtCommandLine, "", @SW_HIDE, $STDOUT_CHILD)
-	While ProcessExists($psTarea)
-		Local $mensajes = $txtCommandLine & @CRLF & StdoutRead($psTarea, True)
-		GUICtrlSetData($Salida, $mensajes)
-	WEnd
-	getListMounted($lvMnt1)
+
+	MensajesProgreso($Salida, $txtCommandLine)
+	f_MostrarProgresoTexto($Salida, $psTarea, SondearCancelacionCierre, "Dism.exe")
+;~ 	getListMounted($lvMnt1)
 EndFunc
 
 ;~ Dism /Get-MountedImageInfo
@@ -132,10 +131,9 @@ Func DismUnmount($RutaMontaje, $bolGuardarCambios, $Salida)
 								'" ' & $strSave
 
 	Local $psTarea = Run(@ComSpec & " /c " & $txtCommandLine, "", @SW_HIDE, $STDOUT_CHILD)
-	While ProcessExists($psTarea)
-		Local $mensajes = $txtCommandLine & @CRLF & StdoutRead($psTarea, True)
-		GUICtrlSetData($Salida, $mensajes)
-	WEnd
+
+	MensajesProgreso($Salida, $txtCommandLine)
+	f_MostrarProgresoTexto($Salida, $psTarea, SondearCancelacionCierre, "Dism.exe")
 
 EndFunc
 
@@ -158,10 +156,12 @@ Func DismAddDriver($RutaDriver, $strRutaMontajeSel, $Salida)
 								'" /Driver:"' & $RutaDriver & '"'
 
 	Local $psTarea = Run(@ComSpec & " /c " & $txtCommandLine, "", @SW_HIDE, $STDOUT_CHILD)
+
 	While ProcessExists($psTarea)
 		Local $mensajes = $txtCommandLine & @CRLF & StdoutRead($psTarea, True)
-		GUICtrlSetData($Salida, $mensajes)
+		f_MensajesProgreso_MostrarProgresoTexto($Salida, $mensajes)
 	WEnd
+	Return $mensajes
 EndFunc
 
 Func VerifyDrivers($RutaMontaje, $Salida)
