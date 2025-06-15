@@ -36,7 +36,7 @@ Func DismCapture($UnidadCap, $FilePath, $ImageName, $ImageDescrip,$compresion, $
 								'" /CaptureDir:' & $UnidadCap & _
 								' /Name:"' & $ImageName & _
 								'" /Description:"' & $ImageDescrip & _
-								($bolAppend ? '"' : '" /Compress:' & $compresion)
+								($bolAppend ? '"' : '" /Bootable /Compress:' & $compresion)  ;14/06/2025 añadida la opcion booteable, para permitir reparse points fix(hardlinks)
 	Local $psTarea = Run(@ComSpec & " /c " & $txtCommandLine, "", @SW_HIDE, $STDOUT_CHILD)
 
 

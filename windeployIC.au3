@@ -3,10 +3,10 @@
 #AutoIt3Wrapper_Outfile_x64=windeployIC.exe
 #AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=Creador de imagenes para windeploy
-#AutoIt3Wrapper_Res_Fileversion=2.0.0.2
+#AutoIt3Wrapper_Res_Fileversion=2.0.1.2
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=y
 #AutoIt3Wrapper_Res_ProductName=windeploy_ic
-#AutoIt3Wrapper_Res_ProductVersion=1.0.5
+#AutoIt3Wrapper_Res_ProductVersion=1.1.0
 #AutoIt3Wrapper_Res_HiDpi=Y
 #AutoIt3Wrapper_Run_AU3Check=n
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
