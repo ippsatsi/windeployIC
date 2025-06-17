@@ -33,10 +33,10 @@ Func DismCapture($UnidadCap, $FilePath, $ImageName, $ImageDescrip,$compresion, $
 ;~ 					[/Description:<image_description>]
 ;~ [/ConfigFile:<configuration_file.ini>] {[/Compress:{max|fast|none}] [/Bootable] | [/WIMBoot]} [/CheckIntegrity] [/Verify] [/NoRpFix] [/EA]
 	Local $txtCommandLine = 'dism ' & ($bolAppend ? '/Append-Image' : '/Capture-Image') & ' /ImageFile:"' & $FilePath & _
-								'" /CaptureDir:' & $UnidadCap & _
+								'" /Bootable /CaptureDir:' & $UnidadCap & _   ;14/06/2025 añadida la opcion booteable, para permitir reparse points fix(hardlinks)
 								' /Name:"' & $ImageName & _
 								'" /Description:"' & $ImageDescrip & _
-								($bolAppend ? '"' : '" /Bootable /Compress:' & $compresion)  ;14/06/2025 añadida la opcion booteable, para permitir reparse points fix(hardlinks)
+								($bolAppend ? '"' : '" /Compress:' & $compresion)
 	Local $psTarea = Run(@ComSpec & " /c " & $txtCommandLine, "", @SW_HIDE, $STDOUT_CHILD)
 
 
